@@ -102,5 +102,17 @@ int compress_file(const char *filename)
     char temp_code[256] = {0};
     generate_huffman_codes(root, codes, temp_code, 0);
 
-    
+    // WRITE HEADER
+    // a. File size (8 bytes)
+    fwrite(&file_size, sizeof(file_size), 1, output);
+
+    // b. Number of unique characters (1 byte)
+    fwrite(&unique_chars, 1, 1, output);
+
+    // c. Frequency table (2 bytes per entry)
+    fwrite(freq_table, sizeof(CharFreq), unique_chars, output);
+
+
+    // Writing compressed data
+    BitWriter writer;
 }
