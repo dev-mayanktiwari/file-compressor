@@ -29,3 +29,12 @@ void write_bit(FILE *output, BitWriter *writer, int bit)
 }
 
 
+void flush_bits(FILE* output, BitWriter* writer)
+{
+    if (writer->position > 0)
+    {
+        writer->byte <<= (8 - writer->position);
+        fwrite(&writer->byte, 1, 1, output);
+    }
+}
+
