@@ -38,3 +38,48 @@ void flush_bits(FILE* output, BitWriter* writer)
     }
 }
 
+int compress_file(const char* filename) {
+    FILE *input = fopen(filename, "rb");
+    if (!input) {
+        printf("Error: Could not open file %s\n", filename);
+        return 1;
+    }
+
+    char* output_filename = malloc(strlen(filename) + 5);
+    sprintf(output_filename, "%s.huf", filename);
+    
+    FILE *output = fopen(output_filename, "wb");
+    if (!output) {
+        printf("Error: Could not create file %s\n", output_filename);
+        fclose(input);
+        free(output_filename);
+        return 1;
+    }
+
+    fseek(input, 0, SEEK_END);
+    size_t file_size = ftell(input);
+    fseek(input, 0, SEEK_SET);
+
+    unsigned char* buffer = malloc(file_size);
+    if (!buffer) {
+        printf("Error: Could not allocate memory for file buffer\n");
+        fclose(input);
+        fclose(output);
+        free(output_filename);
+        return 1;
+    }
+
+    int unique_chars;
+    CharFreq* frequency_table = count_frequencies(buffer, file_size, &unique_chars);
+    if (!frequency_table) {
+        printf("Error: Could not count character frequencies\n");
+        fclose(input);
+        fclose(output);
+        free(output_filename);
+        free(buffer);
+        return 1;
+    }
+
+
+    
+}
