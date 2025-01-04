@@ -112,7 +112,19 @@ int compress_file(const char *filename)
     // c. Frequency table (2 bytes per entry)
     fwrite(freq_table, sizeof(CharFreq), unique_chars, output);
 
-
     // Writing compressed data
     BitWriter writer;
+    init_bit_writer(&writer);
+
+    for (size_t i = 0; i < file_size; i++)
+    {
+        char *code = codes[buffer[i]].code;
+        for (int j = 0; code[j]; j++)
+        {
+            write_bit(output, &writer, code[j] - '0');
+        }
+    }
+
+    flush_bits(output, &writer);
 }
+
