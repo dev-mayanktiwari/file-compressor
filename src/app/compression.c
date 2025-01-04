@@ -126,5 +126,20 @@ int compress_file(const char *filename)
     }
 
     flush_bits(output, &writer);
-}
 
+    // Cleanup
+    for (int i = 0; i < 256; i++)
+    {
+        free(codes[i].code);
+    }
+
+    free_huffman_tree(root);
+    free(freq_table);
+    free(buffer);
+    free(output_filename);
+    free(input);
+    free(output);
+
+    printf("Compression successful\n");
+    return 0;
+}
