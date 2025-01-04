@@ -1,36 +1,54 @@
+# Compiler settings
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -g -I$(INC_DIR)
 
-#DIRECTORY
+# Directory paths
 SRC_DIR = src/app
 INC_DIR = src/include
 OBJ_DIR = build/obj
 BIN_DIR = build/bin
 
-#SOURCE AND OBJECT FILES
-SRCS = $(wildcard $(SRC_DIR)/*.c)
+# Source files
+SRCS = $(SRC_DIR)/main.c \
+       $(SRC_DIR)/huffman.c \
+       $(SRC_DIR)/compress.c \
+       $(SRC_DIR)/decompress.c
+
+# Object files (replacing .c with .o)
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-#FINAL EXECUTABLE
-TARGET = $(BIN_DIR)/app
+# Final executable name
+TARGET = $(BIN_DIR)/compressor
 
-#MAKE SURE THE BUILD DIRECTORY EXISTS
+# Make sure the build directories exist
 $(shell mkdir -p $(OBJ_DIR) $(BIN_DIR))
 
-#DEFAULT TARGET
+# Default target
 all: $(TARGET)
 
-#LINKING
+# Link object files to create executable
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+	@echo "Linking..."
+	@$(CC) $(OBJS) -o $(TARGET)
+	@echo "Build complete! Binary created at $(TARGET)"
 
-#COMPILING
-$$(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
+# Compile source files into object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@echo "Compiling $<..."
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-#CLEANING
+# Clean build files
 clean:
-	rm -rf $(OBJ_DIR)/* $(TARGET)
+	@echo "Cleaning build files..."
+	@rm -rf $(OBJ_DIR)/* $(TARGET)
+	@echo "Clean complete!"
 
-#PHONY
-.PHONY: all clean
+# Run tests 
+test: $(TARGET)
+	@echo "Running tests..."
+	@./$(TARGET) comp test.txt
+	@./$(TARGET) decomp test.txt.huf
+	@echo "Tests complete!"
+
+# Phony targets
+.PHONY: all clean test
